@@ -29,7 +29,8 @@ Vector.prototype.subtract = function (b) {
 }
 
 Vector.prototype.scale = function (k) {
-    return new Vector(this.x * k, this.y * k);    
+	var result = new Vector(this.x * k, this.y * k);
+    return result;
 }
 
 Vector.prototype.dot = function (b) {
