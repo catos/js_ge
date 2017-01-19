@@ -1,9 +1,5 @@
-var myGame = new Engine("canvas");
+var myGame = new Engine("myGame");
 myGame.init();
-// myGame.rootGameObject.keyDown = function (event) {
-// 	console.log('ball->keyDown: ', event);
-// }
-
 
 var Ball = function (name, x, y, radius, color) {
 	this.name = name || "Noname";
@@ -52,12 +48,26 @@ Ball.prototype = {
 		myGame.ctx.stroke();
 	},
 
-	keyDown: function() {
-        console.log(this.name + '->keyDown');
-	}
+	// keyDown: function() {
+    //     console.log(this.name + '->keyDown');
+	// }
 }
 
 myGame.gameObjects.push(new Ball("ball1", myGame.width / 2, myGame.height / 2, 10));
-myGame.gameObjects.push(new Ball("ball2", myGame.width / 3, myGame.height / 3, 20));
+myGame.rootGameObject.keyDown = function (event) {
+    var name = "ball" + (myGame.gameObjects.length + 1);
+    var radius = getRandomInt(1, 50);
+    var color = 'rgb(' + getRandomInt(0, 256) + ',' + getRandomInt(0, 265) + ', ' + getRandomInt(0, 256) + ')';
+    myGame
+        .gameObjects
+        .push(new Ball(
+            name, 
+            getRandomInt(0 + radius, myGame.width - radius), 
+            getRandomInt(0 + radius, myGame.height - radius), 
+            radius,
+            color));
+}
 
 myGame.main();
+
+console.log('myGame: ', myGame);

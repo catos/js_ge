@@ -5,7 +5,14 @@
 // http://gamedev.stackexchange.com/questions/111799/movement-with-vector-math
 // https://www.sitepoint.com/simple-inheritance-javascript/
 
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
 var inheritsFrom = function (child, parent) {
+    console.log('child: ', child);
     child.prototype = Object.create(parent.prototype);
 };
 
@@ -58,12 +65,13 @@ GameObject.prototype = {
     keyDown: function (event) { },
     debug: function () { },
     update: function () { },
-    render: function () { }
+    render: function () { },
+    lol: function () { }
 }
 
 var Engine = function (name, width, height) {
     this.canvas = document.getElementById(name);
-    this.ctx = canvas.getContext("2d");
+    this.ctx = this.canvas.getContext("2d");
     this.width = width || 500;
     this.height = height || 500;
     this.mousePosition = new Vector();
@@ -106,7 +114,6 @@ Engine.prototype = {
     },
 
     keyDown: function(event) {
-        console.log('keyDown: ', event);
         this.gameObjects.forEach(function (go) {
             go.keyDown(event);
         });
