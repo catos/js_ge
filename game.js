@@ -9,35 +9,35 @@ var ctx = canvas.getContext("2d");
 var width = 500;
 var height = 500;
 var vMouse = new Vector();
-var started = false;
+var running = false;
+var gameObjects = [];
 var debug = {};
 
 canvas.width = width;
 canvas.height = height;
 
 canvas.addEventListener("mousemove", function (e) {
-	vMouse = new Vector(e.pageX, e.pageY);
+	vMouse = new Vector(e.pageX - 10, e.pageY - 10);
 });
 
 canvas.addEventListener("mousedown", function (e) {
-	console.log('click');
-	started = !started;
+	running = !running;
 
-	if (started) {
+	if (running) {
 		main();
 	}
 });
 
 canvas.addEventListener("mouseleave", function (e) {
-	started = false;
+	running = false;
 });
 
-/***********************/
-
 function printDebug(ctx) {
+	debug.vMouse = vMouse.x + ', ' + vMouse.y;
+
+	ctx.fillStyle = running ? "rgb(0,155,0)" : "rgb(255,0,0)";
 	var count = 1;
 	for (var i in debug) {
-		// result += debug[i] + '';
 		ctx.fillText(i + ': ' + debug[i], 10, 50 + 10 * count++);
 	}
 }
@@ -51,28 +51,23 @@ var Ball = function (x, y, radius, color) {
 	this.color = color || "rgb(255,0,0)";
 
 	this.direction = new Vector();
+	this.distance = 0;
 }
 
 Ball.prototype.update = function (delta) {
-	if (started) {
-		this.color = "rgb(0,155,0)";
-	} else {
-		this.color = "rgb(255,0,0)";
+
+	this.direction = vMouse.subtract(this.position).normalize();
+	this.distance = vMouse.subtract(this.position).magnitude();
+
+	// Move if distance is greater than radius * 5
+	if (this.distance > (this.radius * 5)) {
+		this.position = this.position.add(this.direction.scale(this.speed).scale(delta));
 	}
 
-	var direction = vMouse.subtract(this.position);
-	this.directionNormalized = vMovement.normalize();
-
-	// move toward it
-	// this.position = this.position.add(this.direction.scale(this.speed).scale(delta));
-	this.position = this.position.add(this.direction);
-
-	debug.delta = delta;
-	debug.vMouse = vMouse.x + ', ' + vMouse.y;
 	debug.speed = this.speed;
+	debug.position = this.position.x + ', ' + this.position.y;
 	debug.direction = this.direction.x + ', ' + this.direction.y;
-	// debug.directionScaled = this.direction.scale(this.speed).x + ', ' + this.direction.scale(this.speed).y;
-
+	debug.distance = this.distance;
 };
 
 Ball.prototype.render = function () {
@@ -82,36 +77,42 @@ Ball.prototype.render = function () {
 	ctx.closePath();
 	ctx.fill();
 
+
+	var pointLength = this.radius * 5;
 	ctx.strokeStyle = "rgb(0,0,255)";
 	ctx.beginPath();
 	ctx.moveTo(this.position.x, this.position.y);
-	ctx.lineTo(this.position.x + (this.direction.x * 50), this.position.y + (this.direction.y * 50));
+	ctx.lineTo(this.position.x + (this.direction.x * pointLength), this.position.y + (this.direction.y * pointLength));
 	ctx.closePath();
 	ctx.stroke();
 };
 
-/***********************/
-
-var ball1 = new Ball(width / 2, height / 2, 10);
+gameObjects.push(new Ball(width / 2, height / 2, 10));
+gameObjects.push(new Ball(width / 3, height / 3, 20));
 
 /***********************/
 
 var lastUpdate = Date.now();
-var myInterval = setInterval(main, 0);
+// var myInterval = setInterval(main, 0);
 
 function main() {
 	var now = Date.now();
 	var delta = (now - lastUpdate) / 100;
+	debug.delta = delta;
 	lastUpdate = now;
 
 	ctx.clearRect(0, 0, width, height);
 
-	ball1.update(delta);
-	ball1.render(delta);
+	gameObjects.forEach(function (go) {
+		if (running) {
+			go.update(delta);
+		}
+		go.render(delta);
+	})
 
 	printDebug(ctx);
 
-	if (started) {
-		requestAnimationFrame(main);
-	}
+	requestAnimationFrame(main);
 }
+
+main();
