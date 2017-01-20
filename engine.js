@@ -3,7 +3,6 @@
 // Vector Math: http://docs.godotengine.org/en/stable/tutorials/vector_math.html
 // Wall Sliding Demo: http://jsfiddle.net/dlubarov/64Laxwoe/
 // http://gamedev.stackexchange.com/questions/111799/movement-with-vector-math
-// https://www.sitepoint.com/simple-inheritance-javascript/
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
@@ -11,90 +10,83 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-var inheritsFrom = function (child, parent) {
-    console.log('child: ', child);
-    child.prototype = Object.create(parent.prototype);
-};
+class Vector {
+    constructor(x, y) {
+        this.x = x || 0;
+        this.y = y || 0;
+    }
 
-var Vector = function (x, y) {
-    this.x = x || 0;
-    this.y = y || 0;
-}
-
-Vector.prototype = {
-    magnitude: function () {
+    magnitude() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
-    },
+    }
 
-    normalize: function () {
+    normalize() {
         var result = this.scale(1 / this.magnitude());
         return result;
-    },
+    }
 
-    add: function (b) {
+    add(b) {
         var result = new Vector();
         result.x = this.x + b.x;
         result.y = this.y + b.y;
 
         return result;
-    },
+    }
 
-    subtract: function (b) {
+    subtract(b) {
         var result = new Vector();
         result.x = this.x - b.x;
         result.y = this.y - b.y;
 
         return result;
-    },
+    }
 
-    scale: function (k) {
+    scale(k) {
         var result = new Vector(this.x * k, this.y * k);
         return result;
-    },
+    }
 
-    dot: function (b) {
+    dot(b) {
         return this.x * b.x + this.y * b.y;
     }
 }
 
-var GameObject = function (name) {
-    this.name = name;
+class Node {
+    constructor(name, x, y) {
+        this.name = name || "Noname";
+        this.position = new Vector(x, y);
+        this.nodes = [];
+    }
+
+    keyDown(event) { }
+    update() { }
+    render() { }
 }
 
-GameObject.prototype = {
-    keyDown: function (event) { },
-    debug: function () { },
-    update: function () { },
-    render: function () { },
-    lol: function () { }
-}
+class Engine extends Node {
+    constructor(name, width, height) {
+        super(name);
 
-var Engine = function (name, width, height) {
-    this.canvas = document.getElementById(name);
-    this.ctx = this.canvas.getContext("2d");
-    this.width = width || 500;
-    this.height = height || 500;
-    this.mousePosition = new Vector();
-    this.gamePaused = true;
-    this.gameObjects = [];
-    this.debugObjects = {};
+        this.canvas = document.getElementById(name);
+        this.ctx = this.canvas.getContext("2d");
+        this.width = width || 500;
+        this.height = height || 500;
+        this.mousePosition = new Vector();
+        this.gamePaused = true;
+        this.debugObjects = {};
 
-    this.lastUpdate = Date.now();
-    this.delta = 0;
-}
+        this.lastUpdate = Date.now();
+        this.delta = 0;
+    }
 
-inheritsFrom(Engine, GameObject);
-
-Engine.prototype = {
-
-    init: function () {
+    init() {
         var self = this;
 
         this.canvas.width = this.width;
         this.canvas.height = this.height;
 
-        this.rootGameObject = new GameObject("root");
-        this.gameObjects.push(this.rootGameObject);
+        this.rootNode = new Node("root");
+        this.nodes.push(this.rootNode);
 
         this.canvas.addEventListener("mousemove", function (e) {
             self.mousePosition = new Vector(e.pageX - 10, e.pageY - 10);
@@ -111,16 +103,16 @@ Engine.prototype = {
         document.addEventListener("keydown", function (e) {
             self.keyDown(e);
         });
-    },
+    }
 
-    keyDown: function(event) {
-        this.gameObjects.forEach(function (go) {
+    keyDown(event) {
+        this.nodes.forEach(function (go) {
             go.keyDown(event);
         });
-    },
+    }
 
-    debug: function () {
-        this.debugObjects.numGameObjects = this.gameObjects.length;
+    debug() {
+        this.debugObjects.numNodes = this.nodes.length;
         this.debugObjects.gamePaused = this.gamePaused;
         this.debugObjects.delta = this.delta;
         this.debugObjects.mousePosition = this.mousePosition.x + ', ' + this.mousePosition.y;
@@ -129,23 +121,23 @@ Engine.prototype = {
         for (var i in this.debugObjects) {
             this.ctx.fillText(i + ': ' + this.debugObjects[i], 10, 50 + 10 * count++);
         }
-    },
+    }
 
-    update: function () {
-        delta = this.delta;
-        this.gameObjects.forEach(function (go) {
+    update() {
+        var delta = this.delta;
+        this.nodes.forEach(function (go) {
             go.update(delta);
         });
-    },
+    }
 
-    render: function () {
-        delta = this.delta;
-        this.gameObjects.forEach(function (go) {
+    render() {
+        var delta = this.delta;
+        this.nodes.forEach(function (go) {
             go.render(delta);
         });
-    },
+    }
 
-    main: function () {
+    main() {
 
         var now = Date.now();
         this.delta = (now - this.lastUpdate) / 100;
@@ -161,5 +153,4 @@ Engine.prototype = {
 
         requestAnimationFrame(this.main.bind(this));
     }
-
 }
