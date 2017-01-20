@@ -8,6 +8,7 @@ class Ball extends Node {
 
 		this.direction = new Vector();
 		this.distance = 0;
+		this.velocity = new Vector();
 	}
 
 	update(delta) {
@@ -16,12 +17,14 @@ class Ball extends Node {
 
 		// Move if distance is greater than radius * 2
 		if (this.distance > (this.radius * 2)) {
-			this.position = this.position.add(this.direction.scale(this.speed).scale(delta));
+			this.velocity = this.direction.scale(this.speed).scale(delta);
+			this.position = this.position.add(this.velocity);
 		}
 
 		myGame.debugObjects.speed = this.speed;
 		myGame.debugObjects.position = this.position.x + ', ' + this.position.y;
 		myGame.debugObjects.direction = this.direction.x + ', ' + this.direction.y;
+		myGame.debugObjects.velocity = this.velocity.x + ', ' + this.velocity.y;
 		myGame.debugObjects.distance = this.distance;
 	}
 
@@ -41,28 +44,46 @@ class Ball extends Node {
 		myGame.ctx.closePath();
 		myGame.ctx.stroke();
 	}
+}
 
+class AcceleratedBall extends Ball {
+	constructor(name, x, y, radius, color) {
+		super(name, x, y, radius, color);
+	}
+
+	update(delta) {
+		// http://genericgamedev.com/general/basic-game-physics-from-newton-to-code/
+	}
 }
 
 class MyGame extends Engine {
 
 	constructor() {
-		super('myGame', 500, 500);
-		this.nodes.push(new Ball("ball1", this.width / 2, this.height / 2, 10));
+		super('myGame');
+		// this.nodes.push(new Ball("ball1", this.width / 2, this.height / 2, 10));
 	}
 
 	keyDown(event) {
+
+		var ball;
 		var name = "ball" + (myGame.nodes.length + 1);
 		var radius = getRandomInt(1, 50);
 		var color = 'rgb(' + getRandomInt(0, 256) + ',' + getRandomInt(0, 265) + ', ' + getRandomInt(0, 256) + ')';
-		myGame
-			.nodes
-			.push(new Ball(
-				name,
-				getRandomInt(0 + radius, myGame.width - radius),
-				getRandomInt(0 + radius, myGame.height - radius),
-				radius,
-				color));
+		var x = getRandomInt(0 + radius, myGame.width - radius);
+		var y = getRandomInt(0 + radius, myGame.height - radius);
+
+		switch (event.code) {
+			case "KeyA":
+				ball = new AcceleratedBall(name, x, y, radius, color);
+				break;
+			case "KeyB":
+				ball = new Ball(name, x, y, radius, color);
+				break;
+			default:
+				return;
+		}
+
+		myGame.nodes.push(ball);
 	}
 }
 

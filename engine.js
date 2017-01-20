@@ -1,54 +1,13 @@
-
 // Game Loop: http://gameprogrammingpatterns.com/game-loop.html
 // Vector Math: http://docs.godotengine.org/en/stable/tutorials/vector_math.html
 // Wall Sliding Demo: http://jsfiddle.net/dlubarov/64Laxwoe/
 // http://gamedev.stackexchange.com/questions/111799/movement-with-vector-math
+// http://gamedev.stackexchange.com/questions/50074/how-to-create-simple-acceleration-in-a-2d-sprite
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min;
-}
-
-class Vector {
-    constructor(x, y) {
-        this.x = x || 0;
-        this.y = y || 0;
-    }
-
-    magnitude() {
-        return Math.sqrt(this.x * this.x + this.y * this.y);
-    }
-
-    normalize() {
-        var result = this.scale(1 / this.magnitude());
-        return result;
-    }
-
-    add(b) {
-        var result = new Vector();
-        result.x = this.x + b.x;
-        result.y = this.y + b.y;
-
-        return result;
-    }
-
-    subtract(b) {
-        var result = new Vector();
-        result.x = this.x - b.x;
-        result.y = this.y - b.y;
-
-        return result;
-    }
-
-    scale(k) {
-        var result = new Vector(this.x * k, this.y * k);
-        return result;
-    }
-
-    dot(b) {
-        return this.x * b.x + this.y * b.y;
-    }
 }
 
 class Node {
@@ -119,7 +78,7 @@ class Engine extends Node {
 
         var count = 1;
         for (var i in this.debugObjects) {
-            this.ctx.fillText(i + ': ' + this.debugObjects[i], 10, 50 + 10 * count++);
+            this.ctx.fillText(i + ': ' + this.debugObjects[i], 12, 50 + 12 * count++);
         }
     }
 
