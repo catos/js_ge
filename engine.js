@@ -52,6 +52,7 @@ class Engine extends Node {
         });
 
         this.canvas.addEventListener("mousedown", function (e) {
+            console.log('mousedown');
             self.gamePaused = !self.gamePaused;
         });
 
@@ -77,8 +78,9 @@ class Engine extends Node {
         this.debugObjects.mousePosition = this.mousePosition.x + ', ' + this.mousePosition.y;
 
         var count = 1;
+        this.ctx.font = '14px arial';
         for (var i in this.debugObjects) {
-            this.ctx.fillText(i + ': ' + this.debugObjects[i], 12, 50 + 12 * count++);
+            this.ctx.fillText(i + ': ' + this.debugObjects[i], 24, 50 + 24 * count++);
         }
     }
 
