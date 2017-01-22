@@ -44,8 +44,4 @@ class Ball extends Node {
 		myGame.ctx.closePath();
 		myGame.ctx.stroke();
 	}
-
-	keyDown(event) {
-		console.log('ball -> keyDown');
-	}
 }

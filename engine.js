@@ -61,15 +61,13 @@ class Engine extends Node {
         });
 
         document.addEventListener("keydown", function (event) {
-            console.log('document.keyDown', self.keyDown);
             self.onKeyDown(event);
         });
     }
 
     onKeyDown(event) {
-        console.log('wtf');
+        this.keyDown(event);
         this.nodes.forEach(function (go) {
-            console.log('call keyDown on go.name: ' + go.name);
             go.keyDown(event);
         });
     }
