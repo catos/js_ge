@@ -60,13 +60,16 @@ class Engine extends Node {
             self.gamePaused = true;
         });
 
-        document.addEventListener("keydown", function (e) {
-            self.keyDown(e);
+        document.addEventListener("keydown", function (event) {
+            console.log('document.keyDown', self.keyDown);
+            self.onKeyDown(event);
         });
     }
 
-    keyDown(event) {
+    onKeyDown(event) {
+        console.log('wtf');
         this.nodes.forEach(function (go) {
+            console.log('call keyDown on go.name: ' + go.name);
             go.keyDown(event);
         });
     }
