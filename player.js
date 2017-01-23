@@ -3,29 +3,51 @@ class Player extends Node {
 		super(name, x, y);
 
 		this.radius = radius || 10;
-		this.color = color || "rgb(255,0,0)";
+		this.color = color || "rgb(0,128,128)";
 		this.speed = 20;
 
-		this.direction = new Vector();
+		this.direction = new Vector(1, 1);
 		this.distance = 0;
-		this.velocity = new Vector();
+		this.velocity = new Vector(0, 0);
+
+		this.thrust = 1;
+		this.angle = 0;
+		this.turnSpeed = 0.01;
+
+		this.MOVE_FORWARD = 38;
+		this.MOVE_FORWARD = 40;
+		this.TURN_LEFT = 37;
+		this.TURN_RIGHT = 39;
 	}
 
 	update(delta) {
-		this.direction = myGame.mousePosition.subtract(this.position).normalize();
-		this.distance = myGame.mousePosition.subtract(this.position).magnitude();
+		this.radians = this.angle / Math.PI * 180;
 
-		// Move if distance is greater than radius * 2
-		if (this.distance > (this.radius * 2)) {
-			this.velocity = this.direction.scale(this.speed).scale(delta);
-			this.position = this.position.add(this.velocity);
-		}
+		var px = this.direction.x * Math.cos(this.radians) - this.direction.y * Math.sin(this.radians); 
+		var py = this.direction.x * Math.sin(this.radians) + this.direction.y * Math.cos(this.radians);
+
+		this.direction.x = px;
+      	this.direction.y = py;
+
+		// this.direction.x += Math.cos(this.radians) * this.thrust;
+      	// this.direction.y += Math.sin(this.radians) * this.thrust;
+
+		
+		// this.distance = myGame.mousePosition.subtract(this.position).magnitude();
+
+		// // Move if distance is greater than radius * 2
+		// if (this.distance > (this.radius * 2)) {
+		// 	this.velocity = this.direction.scale(this.speed).scale(delta);
+		// 	this.position = this.position.add(this.velocity);
+		// }
 
 		myGame.debugObjects.speed = this.speed;
-		myGame.debugObjects.position = this.position.x + ', ' + this.position.y;
-		myGame.debugObjects.direction = this.direction.x + ', ' + this.direction.y;
+		myGame.debugObjects.angle = this.angle;
+		myGame.debugObjects.radians = this.radians;
+		// myGame.debugObjects.position = this.position.x + ', ' + this.position.y;
+		// myGame.debugObjects.direction = this.direction.x + ', ' + this.direction.y;
 		myGame.debugObjects.velocity = this.velocity.x + ', ' + this.velocity.y;
-		myGame.debugObjects.distance = this.distance;
+		// myGame.debugObjects.distance = this.distance;
 	}
 
 	render(delta) {
@@ -46,6 +68,15 @@ class Player extends Node {
 	}
 
 	keyDown(event) {
-		console.log('player -> keyDown');
+
+		if (myGame.keysDown.indexOf(this.TURN_LEFT)) {
+			this.angle += this.turnSpeed * -1;
+		}
+		
+		if (myGame.keysDown.indexOf(this.TURN_RIGHT)) {
+			this.angle += this.turnSpeed * 1;
+		}
+		
+
 	}
 }

@@ -33,6 +33,7 @@ class Engine extends Node {
         this.mousePosition = new Vector();
         this.gamePaused = true;
         this.debugObjects = {};
+        this.keysDown = [];
 
         this.lastUpdate = Date.now();
         this.delta = 0;
@@ -62,6 +63,16 @@ class Engine extends Node {
 
         document.addEventListener("keydown", function (event) {
             self.onKeyDown(event);
+            if (self.keysDown.indexOf(event.keyCode) === -1) {
+                self.keysDown.push(event.keyCode);
+                console.log(self.keysDown);
+            }
+        });
+
+        document.addEventListener("keyup", function (event) {
+            self.keysDown.pop(event.keyCode);
+            console.log(self.keysDown);
+
         });
     }
 
@@ -81,7 +92,7 @@ class Engine extends Node {
         var count = 1;
         this.ctx.font = '14px arial';
         for (var i in this.debugObjects) {
-            this.ctx.fillText(i + ': ' + this.debugObjects[i], 24, 50 + 24 * count++);
+            this.ctx.fillText(i + ': ' + this.debugObjects[i], 10, 10 + 24 * count++);
         }
     }
 
